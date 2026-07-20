@@ -60,5 +60,28 @@ func main() {
 	})
 
 	log.Printf("server running on port %s", cfg.AppPort)
-	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, mux))
+	log.Fatal(http.ListenAndServe(":"+cfg.AppPort, corsMiddleware(mux)))
+}
+
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		origin := r.Header.Get("Origin")
+		allowedOrigins := map[string]bool{
+			"http://localhost:5174":               true,
+			"https://fs-sharingvision.vercel.app": true,
+		}
+
+		if allowedOrigins[origin] {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
