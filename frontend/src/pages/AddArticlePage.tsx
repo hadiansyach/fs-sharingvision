@@ -250,7 +250,7 @@ const AddArticlePage: React.FC = () => {
                     required
                     value={category}
                     disabled={isPending}
-                    onChange={(val) => setCategory(val)}
+                    onChange={(val) => setCategory(val || "")}
                     data={[
                       { value: "", label: "Select a category" },
                       { value: "Technology", label: "Technology" },
