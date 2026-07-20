@@ -1,0 +1,168 @@
+{
+  "info": {
+    "_postman_id": "8a32d6c1-92b4-4e87-a3d5-719b3d18e2a1",
+    "name": "Article API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Article",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Indonesia's Emerging Role in Global Geopolitics and International Diplomacy\",\n    \"content\": \"Indonesia's active foreign policy and economic diplomacy have recently garnered significant international attention across major global news networks. From leading ASEAN initiatives to playing a strategic role in global supply chain defense and climate summits, the nation's political leadership is establishing a strong diplomatic presence on the world stage. Experts worldwide are closely watching how Indonesia balances relations between global superpowers while fostering regional stability.\",\n    \"category\": \"Politics\",\n    \"status\": \"thrash\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/article/",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "article",
+            ""
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Articles",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/article/:limit/:offset",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "article",
+            ":limit",
+            ":offset"
+          ],
+          "variable": [
+            {
+              "key": "limit",
+              "value": "10",
+              "description": "Number of articles to fetch"
+            },
+            {
+              "key": "offset",
+              "value": "0",
+              "description": "Offset pagination"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Article By ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/article/:id",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "article",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "2",
+              "description": "Article ID"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Article",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"TEST A journey through the cosmos: An exploration of deep space\",\n    \"content\": \"TEST The exploration of deep space has captivated humanity for centuries, sparking our imagination and driving us to push the boundaries of scientific knowledge. From the earliest astronomers gazing at the stars to the modern-day marvel of space telescopes, our quest to understand the universe has led to some of the most profound discoveries in human history.\",\n    \"category\": \"Science\",\n    \"status\": \"publish\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/article/:id",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "article",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "2",
+              "description": "Article ID"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Article",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/article/:id",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "article",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "2",
+              "description": "Article ID"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://fs-sharingvision-production.up.railway.app",
+      "type": "string"
+    }
+  ]
+}
