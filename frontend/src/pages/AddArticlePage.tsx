@@ -65,12 +65,12 @@ const AddArticlePage: React.FC = () => {
     }
   }, [isEditMode, article, editor]);
 
-  const handleAddImage = () => {
-    const url = window.prompt("Enter image URL:");
-    if (url && editor) {
-      editor.chain().focus().setImage({ src: url }).run();
-    }
-  };
+  // const handleAddImage = () => {
+  //   const url = window.prompt("Enter image URL:");
+  //   if (url && editor) {
+  //     editor.chain().focus().setImage({ src: url }).run();
+  //   }
+  // };
 
   const handleSubmit = (status: ArticleStatus) => {
     if (!title.trim()) {
