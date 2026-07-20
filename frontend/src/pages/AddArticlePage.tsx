@@ -14,6 +14,7 @@ import {
   useUpdateArticle,
 } from "../hooks/useArticles";
 import type { ArticleStatus } from "../types/article";
+import { Select, TextInput } from "@mantine/core";
 
 const AddArticlePage: React.FC = () => {
   const { id } = useParams();
@@ -173,7 +174,7 @@ const AddArticlePage: React.FC = () => {
 
         {/* Header */}
         <div className="mb-xl">
-          <h1 className="font-display text-display text-on-surface mb-2">
+          <h1 className="font-bold text-display text-on-surface mb-2">
             {isEditMode ? "Edit Article" : "Add New Article"}
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant">
@@ -223,7 +224,7 @@ const AddArticlePage: React.FC = () => {
                 >
                   Title <span className="text-error">*</span>
                 </label>
-                <input
+                <TextInput
                   id="article-title"
                   type="text"
                   value={title}
@@ -231,7 +232,7 @@ const AddArticlePage: React.FC = () => {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Enter article title"
                   required
-                  className="w-full bg-surface text-on-surface font-body-md text-body-md rounded border border-outline-variant px-md py-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all disabled:opacity-50"
+                  size="md"
                 />
               </div>
 
@@ -244,31 +245,28 @@ const AddArticlePage: React.FC = () => {
                   Category <span className="text-error">*</span>
                 </label>
                 <div className="relative">
-                  <select
+                  <Select
                     id="article-category"
+                    required
                     value={category}
                     disabled={isPending}
-                    onChange={(e) => setCategory(e.target.value)}
-                    required
-                    className="w-full bg-surface text-on-surface font-body-md text-body-md rounded border border-outline-variant px-md py-sm appearance-none focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all pr-10 disabled:opacity-50"
-                  >
-                    <option value="" disabled>
-                      Select a category
-                    </option>
-                    <option value="Technology">Technology</option>
-                    <option value="Design">Design</option>
-                    <option value="Business">Business</option>
-                    <option value="Lifestyle">Lifestyle</option>
-                    <option value="Science">Science</option>
-                    <option value="Politics">Politics</option>
-                    <option value="Process">Process</option>
-                    <option value="Infrastructure">Infrastructure</option>
-                    <option value="Strategy">Strategy</option>
-                    <option value="Editorial">Editorial</option>
-                  </select>
-                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">
-                    expand_more
-                  </span>
+                    onChange={(val) => setCategory(val)}
+                    data={[
+                      { value: "", label: "Select a category" },
+                      { value: "Technology", label: "Technology" },
+                      { value: "Design", label: "Design" },
+                      { value: "Business", label: "Business" },
+                      { value: "Lifestyle", label: "Lifestyle" },
+                      { value: "Science", label: "Science" },
+                      { value: "Politics", label: "Politics" },
+                      { value: "Process", label: "Process" },
+                      { value: "Infrastructure", label: "Infrastructure" },
+                      { value: "Strategy", label: "Strategy" },
+                      { value: "Editorial", label: "Editorial" },
+                    ]}
+                    allowDeselect={false}
+                    size="md"
+                  />
                 </div>
               </div>
 

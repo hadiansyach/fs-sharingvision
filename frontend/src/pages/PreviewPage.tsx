@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Select } from "@mantine/core";
 import {
   ArticleCard,
   type ArticleCardData,
@@ -12,22 +13,37 @@ const LIMIT = 6;
 
 const PreviewPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "publish" | "draft" | "thrash"
+  >("publish");
+  const offset = (currentPage - 1) * LIMIT;
 
   const {
     data: articles = [],
     isLoading,
     isError,
     refetch,
-  } = useArticles({ limit: 100, offset: 0 });
+  } = useArticles({ limit: LIMIT, offset });
 
-  // Filter only published articles for public preview
-  const publishedArticles = articles.filter((a) => a.status === "publish");
-  const totalPages = Math.max(1, Math.ceil(publishedArticles.length / LIMIT));
-
-  const currentArticles = publishedArticles.slice(
-    (currentPage - 1) * LIMIT,
-    currentPage * LIMIT,
+  // Filter articles based on selected status dropdown
+  const filteredArticles = articles.filter((a) =>
+    statusFilter === "all" ? true : a.status === statusFilter,
   );
+
+  const totalPages =
+    articles.length === LIMIT ? currentPage + 1 : Math.max(1, currentPage);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleFilterChange = (
+    newStatus: "all" | "publish" | "draft" | "thrash",
+  ) => {
+    setStatusFilter(newStatus);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md">
@@ -67,14 +83,37 @@ const PreviewPage: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl flex flex-col">
-        <div className="mb-xl text-center md:text-left">
-          <h1 className="font-display font-bold text-display text-on-background mb-sm">
-            Latest Articles
-          </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-            Explore our newest published thoughts, insights, and editorial
-            features. Stay updated with the latest trends.
-          </p>
+        <div className="mb-xl flex flex-col md:flex-row md:items-end justify-between gap-md">
+          <div className="text-center md:text-left">
+            <h1 className="font-display font-bold text-display text-on-background mb-sm">
+              Latest Articles
+            </h1>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+              Explore our newest published thoughts, insights, and editorial
+              features. Stay updated with the latest trends.
+            </p>
+          </div>
+
+          {/* Status Filter Dropdown using Mantine Select */}
+          <div className="w-full md:w-48">
+            <Select
+              label="Filter Status"
+              value={statusFilter}
+              onChange={(val) =>
+                handleFilterChange(
+                  (val || "all") as "all" | "publish" | "draft" | "thrash",
+                )
+              }
+              data={[
+                { value: "all", label: "All Status" },
+                { value: "publish", label: "Published" },
+                { value: "draft", label: "Drafts" },
+                { value: "thrash", label: "Trashed" },
+              ]}
+              allowDeselect={false}
+              size="sm"
+            />
+          </div>
         </div>
 
         {/* Loading / Error / Grid Display */}
@@ -89,7 +128,7 @@ const PreviewPage: React.FC = () => {
           <div className="flex flex-col items-center justify-center py-16 my-auto">
             <EmptyState
               icon="error"
-              message="Failed to load published articles. Please check your connection."
+              message="Failed to load articles. Please check your connection."
             />
             <button
               type="button"
@@ -99,11 +138,11 @@ const PreviewPage: React.FC = () => {
               Retry
             </button>
           </div>
-        ) : publishedArticles.length > 0 ? (
+        ) : filteredArticles.length > 0 ? (
           <>
             {/* Article Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg mb-xl">
-              {currentArticles.map((article) => {
+              {filteredArticles.map((article) => {
                 const cardData: ArticleCardData = {
                   id: article.id,
                   title: article.title,
@@ -117,20 +156,33 @@ const PreviewPage: React.FC = () => {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
+            {(totalPages > 1 || currentPage > 1) && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={setCurrentPage}
+                onPageChange={handlePageChange}
               />
             )}
           </>
         ) : (
-          <div className="py-16 my-auto">
+          <div className="py-16 my-auto flex flex-col items-center justify-center">
             <EmptyState
               icon="article"
-              message="No published articles available at the moment."
+              message={
+                currentPage > 1
+                  ? `No more ${statusFilter === "all" ? "articles" : statusFilter} on this page.`
+                  : `No ${statusFilter === "all" ? "articles" : statusFilter} available at the moment.`
+              }
             />
+            {currentPage > 1 && (
+              <div className="mt-md">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            )}
           </div>
         )}
       </main>
