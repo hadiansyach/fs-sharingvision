@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import Underline from "@tiptap/extension-underline";
-import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Placeholder from "@tiptap/extension-placeholder";
-import { RichTextEditor } from "@mantine/tiptap";
+import { Link, RichTextEditor } from "@mantine/tiptap";
 import { notifications } from "@mantine/notifications";
 import { AdminLayout } from "../components/layout/AdminLayout";
 import { EmptyState } from "../components/shared/EmptyState";
@@ -24,6 +22,7 @@ const AddArticlePage: React.FC = () => {
 
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [content, setContent] = useState("");
 
   // Queries & Mutations
   const {
@@ -37,13 +36,21 @@ const AddArticlePage: React.FC = () => {
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
-      Underline,
-      Link.configure({ openOnClick: false }),
+      StarterKit.configure({
+        // StarterKit v3 already includes Underline — only disable built-in Link
+        // so we can use Mantine's enhanced Link extension instead
+        link: false,
+      }),
+      Link, // Mantine's Link extension (from @mantine/tiptap)
       Image,
       Placeholder.configure({ placeholder: "Start writing your article..." }),
     ],
-    content: "",
+    content,
+    editable: true,
+    shouldRerenderOnTransaction: true, // Required for toolbar active states & typing feedback
+    onUpdate: ({ editor }) => {
+      setContent(editor.getHTML());
+    },
   });
 
   // Populate form when article data is fetched in edit mode
@@ -51,7 +58,10 @@ const AddArticlePage: React.FC = () => {
     if (isEditMode && article && editor) {
       setTitle(article.title);
       setCategory(article.category);
-      editor.commands.setContent(article.content || "");
+      setContent(article.content || "");
+      if (editor.getHTML() !== (article.content || "")) {
+        editor.commands.setContent(article.content || "");
+      }
     }
   }, [isEditMode, article, editor]);
 
@@ -81,7 +91,7 @@ const AddArticlePage: React.FC = () => {
       return;
     }
 
-    const contentHtml = editor?.getHTML() || "";
+    const contentHtml = (content || editor?.getHTML() || "").trim();
     if (!contentHtml || contentHtml === "<p></p>") {
       notifications.show({
         title: "Validation Error",
@@ -113,11 +123,12 @@ const AddArticlePage: React.FC = () => {
           onError: (error: any) => {
             notifications.show({
               title: "Update Failed",
-              message: error.message || "An error occurred while updating article.",
+              message:
+                error.message || "An error occurred while updating article.",
               color: "red",
             });
           },
-        }
+        },
       );
     } else {
       createMutation.mutate(payload, {
@@ -134,7 +145,8 @@ const AddArticlePage: React.FC = () => {
         onError: (error: any) => {
           notifications.show({
             title: "Creation Failed",
-            message: error.message || "An error occurred while creating article.",
+            message:
+              error.message || "An error occurred while creating article.",
             color: "red",
           });
         },
@@ -153,7 +165,9 @@ const AddArticlePage: React.FC = () => {
           onClick={() => navigate("/posts")}
           className="inline-flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md mb-lg cursor-pointer"
         >
-          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          <span className="material-symbols-outlined text-[18px]">
+            arrow_back
+          </span>
           Back to All Posts
         </button>
 
@@ -173,7 +187,9 @@ const AddArticlePage: React.FC = () => {
         {isEditMode && isArticleLoading ? (
           <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-xl flex flex-col items-center justify-center min-h-[350px]">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-on-surface-variant font-body-md">Loading article details...</p>
+            <p className="text-on-surface-variant font-body-md">
+              Loading article details...
+            </p>
           </div>
         ) : isEditMode && isArticleError ? (
           <div className="bg-surface-container-lowest border border-outline-variant rounded-lg p-xl flex flex-col items-center justify-center min-h-[350px]">
@@ -262,38 +278,57 @@ const AddArticlePage: React.FC = () => {
                   Content <span className="text-error">*</span>
                 </label>
 
-                <div className={`border border-outline-variant rounded overflow-hidden ${isPending ? "opacity-50 pointer-events-none" : ""}`}>
-                  <RichTextEditor editor={editor}>
-                    <RichTextEditor.Toolbar sticky stickyOffset={60}>
-                      <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Bold />
-                        <RichTextEditor.Italic />
-                        <RichTextEditor.Underline />
-                      </RichTextEditor.ControlsGroup>
+                <RichTextEditor editor={editor}>
+                  <RichTextEditor.Toolbar
+                    sticky
+                    stickyOffset="var(--docs-header-height)"
+                  >
+                    <RichTextEditor.ControlsGroup>
+                      <RichTextEditor.Bold />
+                      <RichTextEditor.Italic />
+                      <RichTextEditor.Underline />
+                      <RichTextEditor.Strikethrough />
+                      <RichTextEditor.ClearFormatting />
+                      <RichTextEditor.Highlight />
+                      <RichTextEditor.Code />
+                    </RichTextEditor.ControlsGroup>
 
-                      <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.BulletList />
-                        <RichTextEditor.OrderedList />
-                      </RichTextEditor.ControlsGroup>
+                    <RichTextEditor.ControlsGroup>
+                      <RichTextEditor.H1 />
+                      <RichTextEditor.H2 />
+                      <RichTextEditor.H3 />
+                      <RichTextEditor.H4 />
+                    </RichTextEditor.ControlsGroup>
 
-                      <RichTextEditor.ControlsGroup>
-                        <RichTextEditor.Link />
-                        <RichTextEditor.Unlink />
-                        <RichTextEditor.Control
-                          onClick={handleAddImage}
-                          aria-label="Insert image"
-                          title="Insert image"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">
-                            image
-                          </span>
-                        </RichTextEditor.Control>
-                      </RichTextEditor.ControlsGroup>
-                    </RichTextEditor.Toolbar>
+                    <RichTextEditor.ControlsGroup>
+                      <RichTextEditor.Blockquote />
+                      <RichTextEditor.Hr />
+                      <RichTextEditor.BulletList />
+                      <RichTextEditor.OrderedList />
+                      <RichTextEditor.Subscript />
+                      <RichTextEditor.Superscript />
+                    </RichTextEditor.ControlsGroup>
 
-                    <RichTextEditor.Content className="min-h-[300px] bg-surface text-on-surface font-body-md text-body-md" />
-                  </RichTextEditor>
-                </div>
+                    <RichTextEditor.ControlsGroup>
+                      <RichTextEditor.Link />
+                      <RichTextEditor.Unlink />
+                    </RichTextEditor.ControlsGroup>
+
+                    <RichTextEditor.ControlsGroup>
+                      <RichTextEditor.AlignLeft />
+                      <RichTextEditor.AlignCenter />
+                      <RichTextEditor.AlignJustify />
+                      <RichTextEditor.AlignRight />
+                    </RichTextEditor.ControlsGroup>
+
+                    <RichTextEditor.ControlsGroup>
+                      <RichTextEditor.Undo />
+                      <RichTextEditor.Redo />
+                    </RichTextEditor.ControlsGroup>
+                  </RichTextEditor.Toolbar>
+
+                  <RichTextEditor.Content />
+                </RichTextEditor>
               </div>
 
               {/* Actions */}
@@ -304,7 +339,11 @@ const AddArticlePage: React.FC = () => {
                   onClick={() => handleSubmit("draft")}
                   className="px-md py-2 rounded font-label-md text-label-md border border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container-low transition-colors disabled:opacity-50 cursor-pointer"
                 >
-                  {isPending ? "Saving..." : isEditMode ? "Update Draft" : "Draft"}
+                  {isPending
+                    ? "Saving..."
+                    : isEditMode
+                      ? "Update Draft"
+                      : "Draft"}
                 </button>
                 <button
                   type="submit"
@@ -314,7 +353,11 @@ const AddArticlePage: React.FC = () => {
                   <span className="material-symbols-outlined text-[18px]">
                     send
                   </span>
-                  {isPending ? "Publishing..." : isEditMode ? "Update & Publish" : "Publish"}
+                  {isPending
+                    ? "Publishing..."
+                    : isEditMode
+                      ? "Update & Publish"
+                      : "Publish"}
                 </button>
               </div>
             </form>

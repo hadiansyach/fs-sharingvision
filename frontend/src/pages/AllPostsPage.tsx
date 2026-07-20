@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { notifications } from "@mantine/notifications";
 import { AdminLayout } from "../components/layout/AdminLayout";
-import { StatusChip } from "../components/shared/StatusChip";
 import { EmptyState } from "../components/shared/EmptyState";
 import {
   useArticles,
@@ -10,6 +9,7 @@ import {
   useDeleteArticle,
 } from "../hooks/useArticles";
 import { STATUS_TAB_MAP, type Article } from "../types/article";
+import { Badge } from "@mantine/core";
 
 const AllPostsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -179,6 +179,12 @@ const AllPostsPage: React.FC = () => {
                 </th>
                 <th
                   scope="col"
+                  className="px-md py-sm text-left font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"
+                >
+                  Last Modified
+                </th>
+                <th
+                  scope="col"
                   className="px-md py-sm text-right font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider"
                 >
                   Action
@@ -195,7 +201,21 @@ const AllPostsPage: React.FC = () => {
                     {article.title}
                   </td>
                   <td className="px-md py-md whitespace-nowrap">
-                    <StatusChip label={article.category} />
+                    <Badge>{article.category}</Badge>
+                  </td>
+                  <td className="px-md py-md whitespace-nowrap text-left font-label-md text-label-md">
+                    {/* format dd mm yyyy hh:mm:ss */}
+                    {new Date(article.updated_date).toLocaleDateString(
+                      "en-GB",
+                      {
+                        year: "numeric",
+                        month: "2-digit",
+                        day: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit",
+                      },
+                    )}
                   </td>
                   <td className="px-md py-md whitespace-nowrap text-right font-label-md text-label-md">
                     <div className="flex items-center justify-end gap-sm">
