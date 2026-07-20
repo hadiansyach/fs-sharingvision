@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { ArticleCard, type ArticleCardData } from "../components/shared/ArticleCard";
+import {
+  ArticleCard,
+  type ArticleCardData,
+} from "../components/shared/ArticleCard";
 import { Pagination } from "../components/shared/Pagination";
 import { EmptyState } from "../components/shared/EmptyState";
 import { useArticles } from "../hooks/useArticles";
@@ -23,7 +26,7 @@ const PreviewPage: React.FC = () => {
 
   const currentArticles = publishedArticles.slice(
     (currentPage - 1) * LIMIT,
-    currentPage * LIMIT
+    currentPage * LIMIT,
   );
 
   return (
@@ -42,21 +45,9 @@ const PreviewPage: React.FC = () => {
           <nav className="hidden md:flex gap-lg items-center">
             <Link
               to="/preview"
-              className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Home
-            </Link>
-            <Link
-              to="/preview"
               className="font-label-md text-label-md text-primary font-bold border-b-2 border-primary py-1"
             >
               Latest Articles
-            </Link>
-            <Link
-              to="/preview"
-              className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
-            >
-              Categories
             </Link>
             <Link
               to="/posts"
@@ -77,7 +68,7 @@ const PreviewPage: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-xl flex flex-col">
         <div className="mb-xl text-center md:text-left">
-          <h1 className="font-display text-display text-on-background mb-sm">
+          <h1 className="font-display font-bold text-display text-on-background mb-sm">
             Latest Articles
           </h1>
           <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">

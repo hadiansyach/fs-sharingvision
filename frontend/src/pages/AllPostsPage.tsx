@@ -13,7 +13,9 @@ import { STATUS_TAB_MAP, type Article } from "../types/article";
 
 const AllPostsPage: React.FC = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<"Published" | "Drafts" | "Trashed">("Published");
+  const [activeTab, setActiveTab] = useState<
+    "Published" | "Drafts" | "Trashed"
+  >("Published");
 
   // Fetch articles from API
   const {
@@ -29,14 +31,18 @@ const AllPostsPage: React.FC = () => {
 
   const currentStatus = STATUS_TAB_MAP[activeTab];
   const filteredArticles = articles.filter(
-    (article) => article.status === currentStatus
+    (article) => article.status === currentStatus,
   );
 
   const handleDelete = (article: Article) => {
     const isTrashedTab = activeTab === "Trashed";
     const actionText = isTrashedTab ? "permanently delete" : "move to trash";
 
-    if (window.confirm(`Are you sure you want to ${actionText} "${article.title}"?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to ${actionText} "${article.title}"?`,
+      )
+    ) {
       if (isTrashedTab) {
         // Hard delete permanently
         deleteMutation.mutate(article.id, {
@@ -82,7 +88,7 @@ const AllPostsPage: React.FC = () => {
                 color: "red",
               });
             },
-          }
+          },
         );
       }
     }
@@ -105,7 +111,7 @@ const AllPostsPage: React.FC = () => {
           className="bg-primary hover:bg-primary/90 text-on-primary px-lg py-sm rounded text-label-md font-label-md flex items-center gap-xs transition-colors shadow-none cursor-pointer"
         >
           <span className="material-symbols-outlined">add</span>
-          + Add New
+          Add New
         </button>
       </div>
 
@@ -137,7 +143,9 @@ const AllPostsPage: React.FC = () => {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center flex-1 py-20">
             <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
-            <p className="text-on-surface-variant font-body-md">Loading articles from API...</p>
+            <p className="text-on-surface-variant font-body-md">
+              Loading articles from API...
+            </p>
           </div>
         ) : isError ? (
           <div className="flex flex-col items-center justify-center flex-1 py-16">
@@ -207,7 +215,11 @@ const AllPostsPage: React.FC = () => {
                         disabled={isMutating}
                         onClick={() => handleDelete(article)}
                         className="text-error hover:text-error/80 transition-colors p-xs disabled:opacity-50 cursor-pointer"
-                        title={activeTab === "Trashed" ? "Permanently Delete" : "Move to Trash"}
+                        title={
+                          activeTab === "Trashed"
+                            ? "Permanently Delete"
+                            : "Move to Trash"
+                        }
                       >
                         <span className="material-symbols-outlined text-[18px]">
                           delete

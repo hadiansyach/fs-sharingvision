@@ -20,16 +20,6 @@ export const Sidebar: React.FC = () => {
       <div className="flex-1 overflow-y-auto">
         <ul className="space-y-sm px-sm">
           <li>
-            <a
-              href="#dashboard"
-              onClick={(e) => e.preventDefault()}
-              className="flex items-center gap-md px-md py-sm rounded-r-full text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200"
-            >
-              <span className="material-symbols-outlined">dashboard</span>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li>
             <Link
               to="/posts"
               className={`flex items-center gap-md px-md py-sm rounded-r-full transition-colors duration-200 ${
@@ -39,7 +29,16 @@ export const Sidebar: React.FC = () => {
               }`}
             >
               <span className="material-symbols-outlined">article</span>
-              <span>All Posts</span>
+              <span>Content Management</span>
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/preview"
+              className="flex items-center gap-md px-md py-sm rounded-r-full text-on-surface-variant hover:bg-surface-container-high transition-colors duration-200"
+            >
+              <span className="material-symbols-outlined">visibility</span>
+              <span>Preview</span>
             </Link>
           </li>
         </ul>
